@@ -3,4 +3,69 @@
 # Socialize API
 
 ### GraphQL API build on .NET 5 using C#, HotChocolate, Entity Framework and SQL Server.
-Click on above `Run in Postman` button to test the API.
+Click on above `Run in Postman` button to test and play with the API.
+
+## API URL - https://socialize.azurewebsites.net/graphql/
+
+### Queries
+* Get all users -
+```graphql
+query {
+    user {
+        id
+        name
+        posts {
+            postData
+        }
+    }
+}
+```
+* Get all posts -
+```graphql
+query {
+    posts {
+        id
+        postData
+        user {
+            id
+            name
+        }
+    }
+}
+```
+
+### Mutations
+* Create new user -
+```graphql
+mutation {
+    createUser (userInput: {
+        name: "Test User"
+        email: "test@email.com"
+        password: "P@ssw0rd"
+    })
+    {
+        user {
+            id
+            name
+        }
+    }
+}
+```
+* Create new post -
+```graphql
+mutation {
+    createPost (postData: {
+        postData: "Test Post - Say Hello to GraphQL"
+        userId: "d45661c3d36f492ccfa108d8d72073af"
+    })
+    {
+        post {
+            id
+            postData
+            user {
+                name
+            }
+        }
+    }
+}
+```
