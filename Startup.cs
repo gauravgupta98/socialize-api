@@ -44,6 +44,9 @@ namespace socialize_api
             services
                 .AddPooledDbContextFactory<AppDbContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DatabaseConnectionString")));
 
+            // Add Scoped Service so that we can use it in Configure method.
+            services.AddScoped<AppDbContext>();
+
             // AddProjections is used to get any child data in a query. Like inside a User if we want to get all the Posts he posted.
             services
                 .AddGraphQLServer()
@@ -62,13 +65,17 @@ namespace socialize_api
         /// </summary>
         /// <param name="app">The application object</param>
         /// <param name="env">The web host environment object.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        /// <param name="context">The db context.</param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext context)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            // Run automatic migrations.
+            context.Database.Migrate();
+            
             app.UseWebSockets();
 
             app.UseRouting();

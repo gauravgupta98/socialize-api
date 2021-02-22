@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>socialize_api</RootNamespace>
+    <UserSecretsId>e9b9c3db-554e-489e-939b-b1e50aae0732</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
