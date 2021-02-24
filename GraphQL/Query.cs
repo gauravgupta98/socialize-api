@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using HotChocolate;
+using HotChocolate.AspNetCore.Authorization;
 using HotChocolate.Data;
 using socialize_api.Data;
 using socialize_api.Models;
@@ -18,6 +19,7 @@ namespace socialize_api.GraphQL
         /// </summary>
         /// <param name="context">The db context.</param>
         /// <returns>The users collection.</returns>
+        [Authorize]
         [UseDbContext(typeof(AppDbContext))]
         [UseFiltering]
         [UseSorting]
@@ -29,6 +31,7 @@ namespace socialize_api.GraphQL
         /// </summary>
         /// <param name="context">The db context.</param>
         /// <returns>The posts collection.</returns>
+        [Authorize]
         [UseDbContext(typeof(AppDbContext))]
         [UseFiltering]
         [UseSorting]

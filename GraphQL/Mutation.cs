@@ -1,12 +1,14 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using HotChocolate;
+using HotChocolate.AspNetCore.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Subscriptions;
 using socialize_api.Data;
 using socialize_api.GraphQL.Posts;
 using socialize_api.GraphQL.Users;
 using socialize_api.Models;
+using socialize_api.Services;
 
 namespace socialize_api.GraphQL
 {
@@ -16,6 +18,17 @@ namespace socialize_api.GraphQL
     public class Mutation
     {
         #region Methods
+        /// <summary>
+        /// Tries to login the user and return authentication token.
+        /// </summary>
+        /// <param name="credentials">The login credentials.</param>
+        /// <param name="context">The db context.</param>
+        /// <param name="authService">The authentication service.</param>
+        /// <returns>Exception if not authenticated, else auth token.</returns>
+        [UseDbContext(typeof(AppDbContext))]
+        public LoginPayload Login(LoginInput credentials, [ScopedService] AppDbContext context, [Service] IAuthenticationService authService) =>
+            new LoginPayload(authService.Authenticate(credentials.Email, credentials.Password, context));
+
         /// <summary>
         /// Creates new user.
         /// </summary>
@@ -47,6 +60,7 @@ namespace socialize_api.GraphQL
         /// <param name="postData">The post content.</param>
         /// <param name="context">The user content.</param>
         /// <returns>The new post payload.</returns>
+        [Authorize]
         [UseDbContext(typeof(AppDbContext))]
         public async Task<CreatePostPayload> CreatePostAsync(CreatePostInput postData, [ScopedService] AppDbContext context)
         {

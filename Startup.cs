@@ -1,14 +1,19 @@
 using GraphQL.Server.Ui.Voyager;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using socialize_api.Data;
 using socialize_api.GraphQL;
 using socialize_api.GraphQL.Posts;
 using socialize_api.GraphQL.Users;
+using socialize_api.Services;
+using System;
+using System.Text;
 
 namespace socialize_api
 {
@@ -47,6 +52,33 @@ namespace socialize_api
             // Add Scoped Service so that we can use it in Configure method.
             services.AddScoped<AppDbContext>();
 
+            services.AddCors();
+
+            // Setup authentication service.
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidAudience = "audience",
+                    ValidIssuer = "issuer",
+                    RequireSignedTokens = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretsecretsecret"))
+                };
+
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+            });
+
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+
             // AddProjections is used to get any child data in a query. Like inside a User if we want to get all the Posts he posted.
             services
                 .AddGraphQLServer()
@@ -57,7 +89,8 @@ namespace socialize_api
                 .AddType<PostType>()
                 .AddFiltering()
                 .AddSorting()
-                .AddInMemorySubscriptions();
+                .AddInMemorySubscriptions()
+                .AddAuthorization();
         }
 
         /// <summary>
@@ -75,7 +108,15 @@ namespace socialize_api
 
             // Run automatic migrations.
             context.Database.Migrate();
-            
+
+            // Add cors.
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
+            app.UseAuthentication();
+
             app.UseWebSockets();
 
             app.UseRouting();
