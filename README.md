@@ -1,5 +1,8 @@
 ﻿[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/024bd0606c3218105991)
 
+![Azure Deployment](https://github.com/gauravgupta98/socialize-api/workflows/Azure%20Deployment/badge.svg?branch=master)
+![Code Analysis](https://github.com/gauravgupta98/socialize-api/workflows/Code%20Analysis/badge.svg?branch=master)
+
 # Socialize API
 
 ### GraphQL API build on .NET 5 using C#, HotChocolate, Entity Framework and SQL Server.
