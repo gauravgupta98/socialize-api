@@ -10,6 +10,8 @@ Click on above `Run in Postman` button to test and play with the API.
 
 ## API URL - https://socialize.azurewebsites.net/graphql/
 
+***Important - Except `login` and `createUser` mutations, all GraphQL requests need Authorization header. To get the authorization token, run `login` mutation.***
+
 ### Queries
 * Get all users -
 ```graphql
@@ -17,8 +19,10 @@ query {
     user {
         id
         name
+        createdTime
         posts {
             postData
+            createdTime
         }
     }
 }
@@ -29,6 +33,7 @@ query {
     posts {
         id
         postData
+        createdTime
         user {
             id
             name
@@ -38,6 +43,18 @@ query {
 ```
 
 ### Mutations
+* Login -
+```graphql
+mutation {
+    login (credentials: {
+        email: "gg@gmail.com"
+        password: "P@ssw0rd"
+    })
+    {
+        token
+    }
+}
+```
 * Create new user -
 ```graphql
 mutation {
@@ -50,6 +67,7 @@ mutation {
         user {
             id
             name
+            createdTime
         }
     }
 }
@@ -58,13 +76,14 @@ mutation {
 ```graphql
 mutation {
     createPost (postData: {
-        postData: "Test Post - Say Hello to GraphQL"
-        userId: "d45661c3d36f492ccfa108d8d72073af"
+        postData: "Yayyyyy! Hello GraphQL."
+        userId: "d10cac6672994ba4eb0b08d8db1413c5"
     })
     {
         post {
             id
             postData
+            createdTime
             user {
                 name
             }
