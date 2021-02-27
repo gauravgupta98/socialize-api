@@ -12,7 +12,6 @@ using socialize_api.GraphQL;
 using socialize_api.GraphQL.Posts;
 using socialize_api.GraphQL.Users;
 using socialize_api.Services;
-using System;
 using System.Text;
 
 namespace socialize_api
@@ -70,13 +69,14 @@ namespace socialize_api
                     ValidAudience = "audience",
                     ValidIssuer = "issuer",
                     RequireSignedTokens = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretsecretsecret"))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("$3cr3+SecretKEY3333"))
                 };
 
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
             });
 
+            services.AddErrorFilter<ErrorFilter>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             // AddProjections is used to get any child data in a query. Like inside a User if we want to get all the Posts he posted.

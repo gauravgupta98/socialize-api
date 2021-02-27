@@ -28,13 +28,26 @@ namespace socialize_api.Models
         /// Gets or sets the Email of the user.
         /// </summary>
         [Required]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         public string Email { get; set; }
 
         /// <summary>
-        /// Gets or sets the Password.
+        /// Gets or sets the password salt.
         /// </summary>
         [Required]
-        public string Password { get; set; }
+        public string PasswordSalt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the password hash.
+        /// </summary>
+        [Required]
+        public string PasswordHash { get; set; }
+
+        /// <summary>
+        /// Gets or sets the created time of user.
+        /// </summary>
+        [Required]
+        public DateTime CreatedTime { get; set; }
 
         /// <summary>
         /// Gets or sets the Posts of the user.

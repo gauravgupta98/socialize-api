@@ -24,6 +24,12 @@ namespace socialize_api.Models
         public string PostData { get; set; }
 
         /// <summary>
+        /// Gets or sets the created time of the post.
+        /// </summary>
+        [Required]
+        public DateTime CreatedTime { get; set; }
+
+        /// <summary>
         /// Gets or sets the Id of the User.
         /// </summary>
         [Required]

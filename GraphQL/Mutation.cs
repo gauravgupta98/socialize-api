@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using HotChocolate;
 using HotChocolate.AspNetCore.Authorization;
@@ -40,11 +42,21 @@ namespace socialize_api.GraphQL
         [UseDbContext(typeof(AppDbContext))]
         public async Task<CreateUserPayload> CreateUserAsync(CreateUserInput userInput, [ScopedService] AppDbContext context, [Service] ITopicEventSender eventSender, CancellationToken cancellationToken)
         {
-            User user = new User
+            User user = context.Users.FirstOrDefault(user => user.Email == userInput.Email);
+            if (user != null)
+            {
+                throw new ApplicationException("Oops! A user with same email already exists.");
+            }
+
+            string salt = PasswordService.GenerateSalt();
+            
+            user = new User
             {
                 Name = userInput.Name,
                 Email = userInput.Email,
-                Password = userInput.Password
+                PasswordSalt = salt,
+                PasswordHash = PasswordService.GeneratePasswordHash(Convert.FromBase64String(salt), userInput.Password),
+                CreatedTime = DateTime.Now
             };
 
             context.Users.Add(user);
@@ -67,7 +79,8 @@ namespace socialize_api.GraphQL
             Post post = new Post
             {
                 PostData = postData.PostData,
-                UserId = postData.UserId
+                UserId = postData.UserId,
+                CreatedTime = DateTime.Now
             };
 
             context.Posts.Add(post);

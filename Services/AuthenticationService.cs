@@ -1,15 +1,12 @@
-﻿using HotChocolate;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using socialize_api.Data;
 using socialize_api.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace socialize_api.Services
 {
@@ -28,10 +25,13 @@ namespace socialize_api.Services
         /// <returns>Exception if not authenticated, otherwise JWT Token.</returns>
         public string Authenticate(string email, string password, AppDbContext context)
         {
-            User user = context.Users.FirstOrDefault(user => user.Email == email && user.Password == password);
+            User user = context.Users.FirstOrDefault(user => user.Email == email);
 
             if (user == null)
-                return "Error! Invalid Credentials.";
+                throw new InvalidOperationException("Error! User doesn't exist with provided credentials.");
+
+            if (!PasswordService.Validate(user.PasswordSalt, user.PasswordHash, password))
+                throw new InvalidOperationException("Oops! Invalid credentials. Please enter valid credentials.");
 
             return GenerateAccessToken(user.Email, user.Id);
         }
@@ -44,7 +44,7 @@ namespace socialize_api.Services
         /// <returns>The token.</returns>
         private string GenerateAccessToken(string email, Guid userId)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretsecretsecret"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("$3cr3+SecretKEY3333"));
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
